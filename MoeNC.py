@@ -76,7 +76,14 @@ class NetworkMonitorApp:
     def fetch_network_connections(self):
         """获取当前网络连接信息"""
         try:
-            output = subprocess.check_output(['netstat', '-ano'], text=True)
+            process = subprocess.Popen(
+                ['netstat', '-ano'], 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE, 
+                text=True, 
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            output, _ = process.communicate()
             lines = output.splitlines()
             connections = {}
 
@@ -108,7 +115,7 @@ class NetworkMonitorApp:
             if self.refresh_flag:
                 connections = self.fetch_network_connections()
                 self.update_treeview(connections)
-            time.sleep(5)
+            time.sleep(3)
 
     def update_treeview(self, connections):
         """只更新新增和变动的数据行"""
